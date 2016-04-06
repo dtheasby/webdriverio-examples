@@ -28,11 +28,11 @@ We’ll be going with Expect for the moment. After installing Chai via npm, and 
 WebdriverIO sets up the test hooks in it’s config file by default. Each hook is executed at different stages of the test’s flow:
 onPrepare(): This is executed before any workers are set up, which makes it a good place to set up environmental dependencies(it’s possible to initialise selenium at this stage, for example).
 
-* ```before()```: Executed prior to any [It] blocks being run in each [Describe] block, custom global variables that apply to every spec should be defined here. 
-* ```beforeEach()```: Executed prior to each it() block, which makes it a good place to define any test set up. It’s good practice to ensure each test case/ [it] block runs independently, so generic set up steps such as navigating to the home-page URL and logging-In are well placed here.
-* ```afterEach()```: Executed after every it() block, test clean up (such as deleting cookies, logging out) should be defined here.
-* ```after()```: Executed at the end of each describe() block, once all [it] blocks have completed.
-* ```onComplete()```: As you can probably guess, this runs after all tests/specs have finished, just prior to the process exiting. Can be used to tear down your selenium server, for example.
+* `before()`: Executed prior to any [It] blocks being run in each [Describe] block, custom global variables that apply to every spec should be defined here. 
+* `beforeEach()`: Executed prior to each it() block, which makes it a good place to define any test set up. It’s good practice to ensure each test case/ [it] block runs independently, so generic set up steps such as navigating to the home-page URL and logging-In are well placed here.
+* `afterEach()`: Executed after every it() block, test clean up (such as deleting cookies, logging out) should be defined here.
+* `after()`: Executed at the end of each describe() block, once all [it] blocks have completed.
+* `onComplete()`: As you can probably guess, this runs after all tests/specs have finished, just prior to the process exiting. Can be used to tear down your selenium server, for example.
 * 
 With Chai and Expect declared at the start of our describe block, we can now add the first assertion to our test:
 
@@ -52,10 +52,10 @@ describe("First Spec", function() {
  
 
 Running this should present you with a passing test. Now let’s take a quick tour of what’s actually going on. 
-As we’re using mocha’s BDD syntax, we’re defining our test suites and cases with ```Describe``` and ```It``` blocks, respectively.
-If you have eagle eyes, you might have spotted that the first thing we do is ```return``` our command chain. As we’re running in an asynchronous environment, mocha needs to know when our browser commands have completed and assertions have finished. It has two ways of doing this, either via the ```done()``` callback, or by returning a promise. 
+As we’re using mocha’s BDD syntax, we’re defining our test suites and cases with `Describe` and `It` blocks, respectively.
+If you have eagle eyes, you might have spotted that the first thing we do is `return` our command chain. As we’re running in an asynchronous environment, mocha needs to know when our browser commands have completed and assertions have finished. It has two ways of doing this, either via the `done()` callback, or by returning a promise. 
 
-Every WebdriverIO command is chainable, and returns a promise, making it incredibly easy to write synchronous code to test the asynchronous browser environment. Each command in the chain is essentially queued, waiting for the promise from the previous command to resolve before executing. By returning this promise chain, mocha knows when the final promise has been resolved, and can end the test. Another advantage of using and returning promises is that can avoid the numerous call-backs and error-handling code normally associated with using ```done()```, making our code simpler, and our lives easier.
+Every WebdriverIO command is chainable, and returns a promise, making it incredibly easy to write synchronous code to test the asynchronous browser environment. Each command in the chain is essentially queued, waiting for the promise from the previous command to resolve before executing. By returning this promise chain, mocha knows when the final promise has been resolved, and can end the test. Another advantage of using and returning promises is that can avoid the numerous call-backs and error-handling code normally associated with using `done()`, making our code simpler, and our lives easier.
 
 Looking back at our test case:
 ```javascript
@@ -66,20 +66,20 @@ Looking back at our test case:
         });  
 ```
 
-```browser``` is an object representation of our selenium browser instance, and is where we direct our actions/commands. The first command we chain to it is ```url(“http://www.webdriver.io”)```, sending the browser to go to the given url. The browser object is passed into ```url```, and returned with a promise attached to represent this action; only once this promise is resolved will the following chained action, ```Click```, execute;
+`browser` is an object representation of our selenium browser instance, and is where we direct our actions/commands. The first command we chain to it is `url(“http://www.webdriver.io”)`, sending the browser to go to the given url. The browser object is passed into `url`, and returned with a promise attached to represent this action; only once this promise is resolved will the following chained action, `Click`, execute;
 
-```.click("[href='/guide.html']")```
+`.click("[href='/guide.html']")`
 
-Every WebdriverIO element interaction accepts a string which is used to locate the associated html element in the DOM, the string can reference the element’s ID, class, tag, or more (see http://webdriver.io/guide/usage/selectors.html). Our click command takes the browser object which has been returned from the ```url``` command, and the string locator we provided (```[href='/guide.html']```). It then locates this element, initiates the action, and returns the browser object with the click command’s promise attached. 
-Following this, we have the ```getUrl``` action which follows a slightly different syntax;
+Every WebdriverIO element interaction accepts a string which is used to locate the associated html element in the DOM, the string can reference the element’s ID, class, tag, or more (see http://webdriver.io/guide/usage/selectors.html). Our click command takes the browser object which has been returned from the `url` command, and the string locator we provided (`[href='/guide.html']`). It then locates this element, initiates the action, and returns the browser object with the click command’s promise attached. 
+Following this, we have the `getUrl` action which follows a slightly different syntax;
 
-```.getUrl().then(function(url){ ```
+`.getUrl().then(function(url){ `
 
-```getUrl``` returns a promise that eventually resolves to give the current url. However, we don’t want to run our assertion until this promise has been fulfilled, so we attach a ‘then’ function to the command, which has the following structure:
+`getUrl` returns a promise that eventually resolves to give the current url. However, we don’t want to run our assertion until this promise has been fulfilled, so we attach a ‘then’ function to the command, which has the following structure:
 
-```promise.then(onFulfilled, onRejected)]```
+`promise.then(onFulfilled, onRejected)]`
 
-We supply our ```then``` with an onFulfilled callback containing our assertion, which is executed only once our ```getUrl()``` promise has been positively resolved. The result of the promise is passed into the onFulfilled function, which contains our assertion. Our ```then``` function returns yet another promise, which eventually resolves to the result of our assertion. 
+We supply our `then` with an onFulfilled callback containing our assertion, which is executed only once our `getUrl()` promise has been positively resolved. The result of the promise is passed into the onFulfilled function, which contains our assertion. Our `then` function returns yet another promise, which eventually resolves to the result of our assertion. 
 
 
 For further understanding of promises, I recommend this blog post [here]( https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html).
@@ -89,7 +89,7 @@ For further understanding of promises, I recommend this blog post [here]( https:
 
 ## Improving with Page Objects
 
-At the moment, we’ve set up our tests to run with each element explicitly declared in the test itself. While it works now, as your project expands, readability and maintainability will start to become a big issue. For every change in the DOM, we’ll need to manually change each affected locator in our tests. Using the Page Object allows us to add a layer of abstraction to our test specs; by grouping together element locators from each web page of the site in external modules and exposing these to the test spec, we can both increase readability by giving our elements human-friendly names (guideButton, rather than ```[href='/guide.html']```), as well as increasing maintainability via encapsulation. 
+At the moment, we’ve set up our tests to run with each element explicitly declared in the test itself. While it works now, as your project expands, readability and maintainability will start to become a big issue. For every change in the DOM, we’ll need to manually change each affected locator in our tests. Using the Page Object allows us to add a layer of abstraction to our test specs; by grouping together element locators from each web page of the site in external modules and exposing these to the test spec, we can both increase readability by giving our elements human-friendly names (guideButton, rather than `[href='/guide.html']`), as well as increasing maintainability via encapsulation. 
 
 ```javascript
 //”./test/page-objects/HomePageObject.js”
