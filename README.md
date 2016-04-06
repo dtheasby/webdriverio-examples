@@ -33,7 +33,7 @@ WebdriverIO sets up the test hooks in it’s config file by default. Each hook i
 * `afterEach()`: Executed after every it() block, test clean up (such as deleting cookies, logging out) should be defined here.
 * `after()`: Executed at the end of each describe() block, once all [it] blocks have completed.
 * `onComplete()`: As you can probably guess, this runs after all tests/specs have finished, just prior to the process exiting. Can be used to tear down your selenium server, for example.
-* 
+
 With Chai and Expect declared at the start of our describe block, we can now add the first assertion to our test:
 
 ```javascript
