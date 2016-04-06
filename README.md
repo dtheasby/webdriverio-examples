@@ -10,7 +10,7 @@ The test we have at the moment is a fairly straight forward, although with the l
 We’ll be going with Expect for the moment. After installing Chai via npm, and then initialising itself and ‘Expect’ in the Before hook located in the wdio config file, we have:
      
 ```javascript
-// “./wdio.conf.js”
+// ./wdio.conf.js
 …
     onPrepare: function() {
         // do something
@@ -37,7 +37,7 @@ WebdriverIO sets up the test hooks in it’s config file by default. Each hook i
 With Chai and Expect declared at the start of our describe block, we can now add the first assertion to our test:
 
 ```javascript
-//”.test/specs/spec.js”
+//.test/specs/spec.js
 describe("First Spec", function() {
     it("should navigate to the webdriverIO homepage", function(){
         return browser.url("http://webdriver.io/")
@@ -92,7 +92,7 @@ For further understanding of promises, I recommend this blog post [here]( https:
 At the moment, we’ve set up our tests to run with each element explicitly declared in the test itself. While it works now, as your project expands, readability and maintainability will start to become a big issue. For every change in the DOM, we’ll need to manually change each affected locator in our tests. Using the Page Object allows us to add a layer of abstraction to our test specs; by grouping together element locators from each web page of the site in external modules and exposing these to the test spec, we can both increase readability by giving our elements human-friendly names (guideButton, rather than `[href='/guide.html']`), as well as increasing maintainability via encapsulation. 
 
 ```javascript
-//”./test/page-objects/HomePageObject.js”
+//./test/page-objects/HomePageObject.js
 var HomePage =(function(){
 
 function HomePage() {
@@ -109,7 +109,7 @@ module.exports = HomePage;
 ```
 
 ```javascript
-// “./test/specs/spec.js”
+// ./test/specs/spec.js
 var HomePageObject = require("../page-objects/HomePageObject.js")
 
 describe("First Spec", function() {
@@ -153,7 +153,7 @@ The current page-object works, but is fairly straight forward at the moment. Wha
 Navigating to the guide page and clicking on the Test Runner dropdown is fairly straight forward. However, the test will now be interacting with new elements on a separate page, so let’s create a page-object for the Developer Guide page:
 
 ```javascript
-“./test/page-objects/DevGuidePageObject.js”
+//./test/page-objects/DevGuidePageObject.js
 var DevGuide = (function() {
     
   function DevGuide() {
@@ -179,10 +179,10 @@ module.exports = DevGuide;
 ```
 
 ```javascript
+//./test/specs/spec.js
 var HomePageObject = require("../page-objects/HomePageObject.js")
 var DevGuidePageObject = require("../page-objects/DevGuidePageObject.js")
 
-//”./test/specs/spec.js”
 describe("First Spec", function() {
     
     var home;
@@ -218,7 +218,7 @@ The page-object now contains elements for each potential drop down we want to te
 which simply lets you search for elements down the branch of a specified element. The command takes the ID of a WebElement JSON object (not the CSS ID), and returns an array of WebElement JSON objects matching the selector provided. Using this, we can search for and return all link elements that are children of the testrunner element. Sounds good, right? The first thing we do is declare the locator to reference the test runner dropdown `testRunnerDropdown`, and then create a helper function that returns the WebElement ID of a given element, ```getElementID```:
 
 ```javascript
-//”./test/page-objects/DevGuidePageObject.js
+//./test/page-objects/DevGuidePageObject.js
 …
 DevGuide.prototype.getElementId = function(ele) {
     return ele.value.ELEMENT;   
@@ -230,7 +230,7 @@ WebdriverIO is slightly awkward in the way it deals with elements. We’re unabl
 We’ve added `getElementID` to the prototype so that each instanced page-object has access to it without re-declaring it each time, as this could adversely affect memory usage during large-scale parallel tests. The final function we need implements `elementIdElements`, and returns the length of the resulting WebElement JSON array:
 
 ```javascript
-//”./test/page-objects/DevGuidePageObject.js
+//./test/page-objects/DevGuidePageObject.js
 …
 DevGuide.prototype.numberOfSubElements = function(ID) {
    return browser.elementIdElements(ID,'<a>').then(function(elementsArray){
@@ -243,7 +243,7 @@ DevGuide.prototype.numberOfSubElements = function(ID) {
 This takes a given ID, and finds and returns all child elements that match the given tag. We can then implement these in our test spec:
 
 ```javascript
-//“./test/specs/spec.js”
+//./test/specs/spec.js”
 …
     it("should count the number of testrunner menu subelements", function() {
         return browser.url(home.url)
