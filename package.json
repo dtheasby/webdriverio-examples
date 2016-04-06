@@ -1,0 +1,25 @@
+{
+  "name": "webdriveriotutorial",
+  "version": "1.0.0",
+  "description": "A quick look at webdriverIO",
+  "main": "wdio.conf.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-webdriver": "^1.0.3",
+    "selenium-standalone": "^5.1.0",
+    "webdriverio": "^3.4.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.4.5"
+  },
+  "scripts": {
+    "test": "mocha",
+    "runTest": "gulp runTest"
+  },
+  "author": "",
+  "license": "ISC"
+}
