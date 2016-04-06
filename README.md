@@ -66,13 +66,12 @@ Looking back at our test case:
         });  
 ```
 
-```browser``` is an object representation of our selenium browser instance, and is where we direct our actions/commands. The first command we chain to it is ```url(“http://www.webdriver.io”)```, sending the browser to go to the given url. The browser object is passed into ```url```, and returned with a promise attached to represent this action; only once this promise is resolved will the following chained action, ```Click```, execute:
+```browser``` is an object representation of our selenium browser instance, and is where we direct our actions/commands. The first command we chain to it is ```url(“http://www.webdriver.io”)```, sending the browser to go to the given url. The browser object is passed into ```url```, and returned with a promise attached to represent this action; only once this promise is resolved will the following chained action, ```Click```, execute;
 
-[.click("[href='/guide.html']")]
+```.click("[href='/guide.html']")```
 
 Every WebdriverIO element interaction accepts a string which is used to locate the associated html element in the DOM, the string can reference the element’s ID, class, tag, or more (see http://webdriver.io/guide/usage/selectors.html). Our click command takes the browser object which has been returned from the ```url``` command, and the string locator we provided (```[href='/guide.html']```). It then locates this element, initiates the action, and returns the browser object with the click command’s promise attached. 
-
-Following this, we have the ```getUrl``` action which follows a slightly different syntax:
+Following this, we have the ```getUrl``` action which follows a slightly different syntax;
 
 ```.getUrl().then(function(url){ ```
 
@@ -144,8 +143,8 @@ function HomePage() {
     };
 ```
 
- We set up a constructor function ```HomePage()```, and publicly assign our element-finder strings to it, this is then returned by the IIFE and exposed by ```module.exports``` so we can access it from our spec files. Using a Constructor pattern means we can instance our page-objects, in case we want to run our specs in parallel at a later date.
-We then use ```require``` to access the page-object assigning it to the HomePage variable. We create a new variable in the describe block, ```var home```, and then use the ```before``` hook to create a new instance of the page-object before any of the ‘it’ blocks are executed. The home variable is declared within the ```describe``` block so that it is accessible to each ```it``` block. If it was declared in ```before```, the ```it``` blocks would be unable to access it due to JavaScript’s function scope. 
+ We set up a constructor function `HomePage()`, and publicly assign our element-finder strings to it, this is then returned by the IIFE and exposed by `module.exports` so we can access it from our spec files. Using a Constructor pattern means we can instance our page-objects, in case we want to run our specs in parallel at a later date.
+We then use `require` to access the page-object assigning it to the HomePage variable. We create a new variable in the describe block, `var home`, and then use the `before` hook to create a new instance of the page-object before any of the ‘it’ blocks are executed. The home variable is declared within the `describe` block so that it is accessible to each `it` block. If it was declared in `before`, the `it` blocks would be unable to access it due to JavaScript’s function scope. 
 
 ### Expanding our use of Page Objects:
 
@@ -178,6 +177,7 @@ return DevGuide;
 
 module.exports = DevGuide; 
 ```
+
 ```javascript
 var HomePageObject = require("../page-objects/HomePageObject.js")
 var DevGuidePageObject = require("../page-objects/DevGuidePageObject.js")
@@ -211,11 +211,11 @@ describe("First Spec", function() {
 });
 ```
 
-The page-object now contains elements for each potential drop down we want to test, and our [it] block references it. The next thing we want to do is find a way of determining the number of sub-elements. WebdriverIO has the command ```elementIdElements```:
+The page-object now contains elements for each potential drop down we want to test, and our [it] block references them. The next thing we want to do is find a way of determining the number of sub-elements. WebdriverIO has the command ```elementIdElements```:
 
-elementIdElements(ID,selector).then(callback);
+`elementIdElements(ID,selector).then(callback);`
 
-which simply lets you search for elements down the branch of a specified element. The command takes the ID of a WebElement JSON object (not the CSS ID), and returns an array of WebElement JSON objects matching the selector provided. Using this, we can search for and return all link elements that are children of the testrunner element. Sounds good, right? The first thing we do is declare the locator to reference the test runner dropdown ```testRunnerDropdown```, and then create a helper function that returns the WebElement ID of a given element, ```getElementID```:
+which simply lets you search for elements down the branch of a specified element. The command takes the ID of a WebElement JSON object (not the CSS ID), and returns an array of WebElement JSON objects matching the selector provided. Using this, we can search for and return all link elements that are children of the testrunner element. Sounds good, right? The first thing we do is declare the locator to reference the test runner dropdown `testRunnerDropdown`, and then create a helper function that returns the WebElement ID of a given element, ```getElementID```:
 
 ```javascript
 //”./test/page-objects/DevGuidePageObject.js
@@ -226,8 +226,9 @@ DevGuide.prototype.getElementId = function(ele) {
 …
 ```
 
-WebdriverIO is slightly awkward in the way it deals with elements. We’re unable to pass elements around as first-class citizens, so instead we’re left passing around WebElement ID’s of the elements we want, or string references for selectors, and re-finding the element when we need it. As a result, in a larger project, it might be beneficial to have ```getElementID``` as a generic helper function in a helper module, so that whenever we need to perform an action on an element we can easily call that function and grab the element’s ID and pass that forward. However, we’ll keep it in our Dev Guide page-object for now. 
-We’ve added ```getElementID``` to the prototype so that each instanced page-object has access to it without re-declaring it each time, as this could adversely affect memory usage during large-scale parallel tests. The final function we need implements [elementIdElements], and returns the length of the resulting WebElement JSON array:
+WebdriverIO is slightly awkward in the way it deals with elements. We’re unable to pass elements around as first-class citizens, so instead we’re left passing around WebElement ID’s of the elements we want, or string references for selectors, and re-finding the element when we need it. As a result, in a larger project, it might be beneficial to have `getElementID` as a generic helper function in a helper module, so that whenever we need to perform an action on an element we can easily call that function and grab the element’s ID and pass that forward. However, we’ll keep it in our Dev Guide page-object for now. 
+We’ve added `getElementID` to the prototype so that each instanced page-object has access to it without re-declaring it each time, as this could adversely affect memory usage during large-scale parallel tests. The final function we need implements `elementIdElements`, and returns the length of the resulting WebElement JSON array:
+
 ```javascript
 //”./test/page-objects/DevGuidePageObject.js
 …
@@ -238,7 +239,8 @@ DevGuide.prototype.numberOfSubElements = function(ID) {
 };
 …
 ```
-This takes a given ID, and finds and returns all child elements that match the given tag. We can then implement these in our test case:
+
+This takes a given ID, and finds and returns all child elements that match the given tag. We can then implement these in our test spec:
 
 ```javascript
 //“./test/specs/spec.js”
@@ -258,8 +260,10 @@ This takes a given ID, and finds and returns all child elements that match the g
 });
 ```
 
-After clicking on the [testRunnerButton], the element containing our drop down (and the links) appears. This encompassing element is then passed to a chain of then functions, allowing us to 
-1)Return the element’s WebElement ID
-2)Find all the child-elements of this element that match the <a> tag, and return this value.
-3)Assert that the correct number of links are shown.
+After clicking on the `testRunnerButton`, the element containing our drop down (and the links) appears. This encompassing element is then passed to a chain of `then` functions, allowing us to;
+
+1. Return the element’s WebElement ID
+2. Find all the child-elements of this element that match the <a> tag, and return this value.
+3. Assert that the correct number of links are shown.
+
 That’s it! It’s a simple test that may not have huge implications in a real test case, but it successfully demonstrates how to surmount some of the minor difficulties associated with the element finder model implemented in WebdriverIO. 
