@@ -5,13 +5,15 @@ var webdriver = require('gulp-webdriver');
 
 
 gulp.task('selenium', function (done) {
-    selenium.install(function(err){
+    selenium.install({
+    logger: function (message) { }
+  }, function(err){
         if(err) return done(err);
-    });
-    selenium.start(function (err, child) {
-      if (err) return done(err);
-      selenium.child = child;
-      done();
+		selenium.start(function (err, child) {
+			if (err) return done(err);
+			selenium.child = child;
+			done();
+		});
     });
 });
 
