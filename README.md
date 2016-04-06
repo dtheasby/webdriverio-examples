@@ -26,8 +26,8 @@ We’ll be going with Expect for the moment. After installing Chai via npm, and 
 ```
 
 WebdriverIO sets up the test hooks in it’s config file by default. Each hook is executed at different stages of the test’s flow:
-onPrepare(): This is executed before any workers are set up, which makes it a good place to set up environmental dependencies(it’s possible to initialise selenium at this stage, for example).
 
+* `onPrepare()`: This is executed before any workers are set up, which makes it a good place to set up environmental dependencies(it’s possible to initialise selenium at this stage, for example).
 * `before()`: Executed prior to any [It] blocks being run in each [Describe] block, custom global variables that apply to every spec should be defined here. 
 * `beforeEach()`: Executed prior to each it() block, which makes it a good place to define any test set up. It’s good practice to ensure each test case/ [it] block runs independently, so generic set up steps such as navigating to the home-page URL and logging-In are well placed here.
 * `afterEach()`: Executed after every it() block, test clean up (such as deleting cookies, logging out) should be defined here.
