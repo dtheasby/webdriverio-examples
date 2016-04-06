@@ -55,7 +55,7 @@ Running this should present you with a passing test. Now let’s take a quick to
 As we’re using mocha’s BDD syntax, we’re defining our test suites and cases with `Describe` and `It` blocks, respectively.
 If you have eagle eyes, you might have spotted that the first thing we do is `return` our command chain. As we’re running in an asynchronous environment, mocha needs to know when our browser commands have completed and assertions have finished. It has two ways of doing this, either via the `done()` callback, or by returning a promise. 
 
-Furthermore, every WebdriverIO command is chainable, and returns a promise, making it incredibly easy to write synchronous code to test the asynchronous browser environment. Each command in the chain is essentially queued, waiting for the promise from the previous command to resolve before executing. By returning this promise chain, mocha knows when the final promise has been resolved, and can end the test. Another advantage of using and returning promises is that can avoid the numerous call-backs and error-handling code normally associated with using `done()`, making our code simpler, and our lives easier.
+Furthermore, every WebdriverIO command is chainable and returns a promise, making it incredibly easy to write synchronous code to test the asynchronous browser environment. Essentially, each command in the chain is queued, waiting for the promise from the previous command to resolve before executing. By returning this promise chain, mocha knows when the final promise has been resolved, and will wait for this before ending the test. Another advantage of using and returning promises is that we can avoid the numerous call-backs and error-handling code normally associated with using `done()`, making our code simpler, and our lives easier.
 
 Looking back at our test case:
 ```javascript
@@ -75,16 +75,16 @@ Following this, we have the `getUrl` action which follows a slightly different s
 
 `.getUrl().then(function(url){ `
 
-`getUrl` returns a promise that eventually resolves to give the current url. However, we don’t want to run our assertion until this promise has been fulfilled, so we attach a ‘then’ function to the command, which has the following structure:
+`getUrl` returns a promise that eventually resolves to give the brower's current url. The assertion relies on the result of this promise, so we don't want it to execute prior to the resolution. This can be done by attaching a `then` function that "holds" our assertion:
 
 `promise.then(onFulfilled, onRejected)]`
 
-We supply our `then` with an onFulfilled callback containing our assertion, which is executed only once our `getUrl()` promise has been positively resolved. The result of the promise is passed into the onFulfilled function, which contains our assertion. Our `then` function returns yet another promise, which eventually resolves to the result of our assertion. 
+In place of "onfulfilled" we pass the function containing our assertion, and the result of the promise is passed into the function upon resolution. 
+
+Finally, Mocha sees that all promises have resolved, and the result of the assertion, ending the test.
 
 
 For further understanding of promises, I recommend this blog post [here]( https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html).
-
-
 
 
 ## Improving with Page Objects
@@ -143,7 +143,7 @@ function HomePage() {
     };
 ```
 
- We set up a constructor function `HomePage()`, and publicly assign our element-finder strings to it, this is then returned by the IIFE and exposed by `module.exports` so we can access it from our spec files. Using a Constructor pattern means we can instance our page-objects, in case we want to run our specs in parallel at a later date.
+We set up a constructor function `HomePage()`, and publicly assign our element-finder strings to it, this is then returned by the IIFE and exposed by `module.exports` so we can access it from our spec files. Using a Constructor pattern means we can instance our page-objects, in case we want to run our specs in parallel at a later date.
 We then use `require` to access the page-object assigning it to the HomePage variable. We create a new variable in the describe block, `var home`, and then use the `before` hook to create a new instance of the page-object before any of the ‘it’ blocks are executed. The home variable is declared within the `describe` block so that it is accessible to each `it` block. If it was declared in `before`, the `it` blocks would be unable to access it due to JavaScript’s function scope. 
 
 ### Expanding our use of Page Objects:
@@ -226,8 +226,11 @@ DevGuide.prototype.getElementId = function(ele) {
 …
 ```
 
-WebdriverIO is slightly awkward in the way it deals with elements. We’re unable to pass elements around as first-class citizens, so instead we’re left passing around WebElement ID’s of the elements we want, or string references for selectors, and re-finding the element when we need it. As a result, in a larger project, it might be beneficial to have `getElementID` as a generic helper function in a helper module, so that whenever we need to perform an action on an element we can easily call that function and grab the element’s ID and pass that forward. However, we’ll keep it in our Dev Guide page-object for now. 
-We’ve added `getElementID` to the prototype so that each instanced page-object has access to it without re-declaring it each time, as this could adversely affect memory usage during large-scale parallel tests. The final function we need implements `elementIdElements`, and returns the length of the resulting WebElement JSON array:
+We’ve added `getElementID` to the prototype so that every instanced page-object has access to it without re-declaring it each time, as this could adversely affect memory usage during large-scale parallel tests. 
+
+WebdriverIO is slightly awkward in the way it deals with elements. We’re unable to pass elements around as first-class citizens, so instead we’re left passing around WebElement ID’s of the elements we want, or string references for selectors, and re-finding the element when we need it. As a result, in a larger project, it might be beneficial to have `getElementID` as a generic helper function in a helper module, so that whenever we need to perform an action on an element we can easily call that function. However, we’ll keep it in our Dev Guide page-object for now, as our test spec is testing the associated page. 
+
+The final function we need implements `elementIdElements`, and returns the length of the resulting WebElement JSON array:
 
 ```javascript
 //./test/page-objects/DevGuidePageObject.js
