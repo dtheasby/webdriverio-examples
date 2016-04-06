@@ -168,7 +168,7 @@ DevGuide.prototype.getElementId = function(ele) {
 
 DevGuide.prototype.numberOfSubElements = function(ID) {
    return browser.elementIdElements(ID,'<a>').then(function(elementsArray){
-        return Object.keys(elementsArray).length;
+        return Object.keys(elementsArray.value).length;
     });
 }
 
@@ -205,7 +205,7 @@ describe("First Spec", function() {
             }).then(function(id) {
                 return devGuide.numberOfSubElements(id)
             }).then(function(numberOfElements) {
-                return expect(numberOfElements).to.equal(6);
+                return expect(numberOfElements).to.equal(5);
             });
     });
 });
@@ -234,7 +234,7 @@ We’ve added `getElementID` to the prototype so that each instanced page-object
 …
 DevGuide.prototype.numberOfSubElements = function(ID) {
    return browser.elementIdElements(ID,'<a>').then(function(elementsArray){
-        return Object.keys(elementsArray).length;
+      return Object.keys(elementsArray.value).length;
     });
 };
 …
@@ -255,7 +255,7 @@ This takes a given ID, and finds and returns all child elements that match the g
             }).then(function(id) {
                 return devGuide.numberOfSubElements(id)
             }).then(function(numberOfElements) {
-                return expect(numberOfElements).to.equal(6);
+                return expect(numberOfElements).to.equal(5);
             });
 });
 ```
