@@ -1,7 +1,7 @@
 var DevGuide = (function() {
     
   function DevGuide() {
-    this.testRunnerButton = '[data-open="testrunner"]';
+    this.testRunnerElement = '[data-open="testrunner"]';
     this.testRunnerDropdown = ".commands.testrunner";
     
 };
