@@ -24,7 +24,7 @@ describe("First Spec", function() {
     it("should count the number of testrunner menu subelements", function() {
         return browser.url(home.url)
             .click(home.guideButton)
-            .click(devGuide.testRunnerButton)
+            .click(devGuide.testRunnerElement)
             .element(devGuide.testRunnerDropdown)
             .then(function(elem) {
                 return devGuide.getElementId(elem);
