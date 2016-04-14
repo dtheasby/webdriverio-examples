@@ -13,12 +13,18 @@ The final product will be set up with WebdriverIO using Mocha as a test framewor
 ### Getting Started 
 
 First you need to install Node.Js and NPM if you haven’t already ([Node](https://nodejs.org/en/), NPM installs with node). This provides us with a javascript runtime environment, and installs npm globally so we can access it from the command line:
+
+[ screenshot here ]
  
 With that done, next we create a new directory for the entire testing library to live in, and install WebdriverIO itself. We’ll be working with v3.4.0, so we can specify that with `npm install webdriverio@3.4.0` (we’re installing to the current directory, if we wanted to install globally we’d append with –g, `npm install webdriverio@3.4.0 –g`).
+
+[ screenshot here ]
 
 Our once empty directory should now contain one new folder, node_modules with WebdriverIO inside, this will contain all the npm dependencies.
 
 The WebdriverIO provided test runner, `wdio`, executes all commands synchronously and handles session management very well, so we’ll be using this to execute the test suite(more info [here](http://webdriver.io/v3.4/guide/testrunner/gettingstarted.html)). `wdio`  needs a configuration file, which is essentially an object that specifies the location of test scripts/specs, the framework, reporter, and some of our hooks, before it can run any suites. Luckily, WebdriverIO comes with a handy commandline helper to set up the config file, this can be accessed by running `wdio config`:
+
+[ screenshot here ]
 
 ```javascript
 //./wdio.conf.js
@@ -78,34 +84,45 @@ describe("First Spec", function() {
 ```
 
 With that set up, we can run `wdio` providing it with the config file:
+
+[ screenshot here ]
  
-
-
-
 That’s good, no webdriverIO specific errors have fired, and it has found our config file and tests/specs. The next step is to deal with the rather obvious “ERROR: Couldn’t connect to selenium server”, and fix up a connection to the local selenium server.
 Setting up the Selenium Server
 
 ### Setting up the Selenium Server
 
 Here we’ll be using [Selenium-Standalone](https://www.npmjs.com/package/selenium-standalone) npm package. This package allows us to install the selenium server binary, browser drivers, and the ability to launch a selenium server all from the command line (and programmatically, which will come in handy later), clever right? Let’s install this alongside webdriverio, using `npm install selenium-standalone`:
+
+[ screenshot here ]
  
 And following that, run `selenium-standalone`'s `install` command with `".\node_modules\.bin\selenium-standalone" install`:
+
+[ screenshot here ]
  
 This command pulls in the latest selenium server version, as well as the default versions of each browser driver. You can specify exactly which drivers and versions you want to install using variations of the following command(See the npm page for more info):
 
 `selenium-standalone install --drivers.chrome.version=2.15 --drivers.chrome.baseURL=https://chromedriver.storage.googleapis.com`
 
 But we’ll stick with the defaults now, following which, we should be able to launch our server using `".\node_modules\.bin\selenium-standalone" start`
+
+[ screenshot here ]
  
 Which means we’ll now be able to run our first test. The Selenium server remains registered to the command window, so after launching a new one and returning to our test directory, we can try to run our tests! Booyah!
+
+[ screenshot here ]
  
 ….almost. There’s one last thing we need to do. As we’re using mocha as a test framework, we need to install this as a dependency too. After simply running `npm install mocha`:
+
+[ screenshot here ]
  
 Booyah! One running and passing UI test. Okay, so I guess that was the pretty long version of ‘Getting Started’, but we’ve covered all the basics and developed a solid foundation. Although, having to point directly to the wdio command and manually launch the selenium server when we want to run a test is a bit of a pain; so, let’s make it a bit easier to run our specs by automating our automation!
 
 ### Setting up Gulp
 
 We’re going to take a slight detour first and set up a package.json file so npm can recognise our directory as a package(allowing us to use the `npm run` command later!). Npm can create one for us by using the `npm init` command, which will make assumptions based on our existing directory, and create a package.json from it. Running this in the root of our test directory should give us a package.json that matches the following:
+
+[ screenshot here ]
 
 ```javascript
 //./package.json
@@ -140,6 +157,8 @@ Appending the command with “—save” tells npm to add gulp to the list of de
 `npm install gulp-webdriver@1.0.3 –-save`
 
 With gulp, selenium-standalone, and gulp-webdriver installed, we now have all the dependencies required to automate the test workflow. This is what we’re building:
+ 
+ [ screenshot here ]
  
  ```javascript
  //./gulpfile.js
@@ -246,6 +265,8 @@ Setting up the `npm run` task is super simple, and is done in our project.json f
 …
 ```
 From here, all we need to do is execute `npm run runTasks` to access the assigned gulp workflow. This works because the `npm run` command adds `node_modules/.bin`, our local dependency directory, to the shell’s PATH, allowing us to run Gulp like it’s installed globally!
+
+[ screenshot here ]
  
 That’s it for setting up our workflow environment! Without gulp, each time the test were to run we’d need to (perhaps update) launch our selenium server, run our test scripts, and then kill the server. With it, we’ve automated this workflow, allowing us to run it all with one simple npm command. 
 
@@ -256,6 +277,8 @@ Perhaps time for some coffee.
 The test we have at the moment is a fairly straight forward, although with the lack of any type of assertion, can we really call it a test? We can crumble any doubt by installing an assertion library, such as Chai! Chai provides three different styles(Expect, Should, and Assert), that allow us to write syntactically delicious assertions. 
 
 We’ll be going with Expect for the moment. After installing Chai via npm, and then initialising itself and ‘Expect’ in the Before hook located in the wdio config file, we have:
+
+[ screenshot here ]
      
 ```javascript
 // ./wdio.conf.js
@@ -291,6 +314,7 @@ describe("First Spec", function() {
 }) ;
 ```
  
+ [ screenshot here ]
 
 Running this should present you with a passing test. Now let’s take a quick tour of what’s actually going on. 
 
