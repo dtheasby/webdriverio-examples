@@ -11,8 +11,8 @@ DevGuide.prototype.getElementId = function(ele) {
 };
 
 DevGuide.prototype.numberOfSubElements = function(ID) {
-   return browser.elementIdElements(ID,'<a>').then(function(elementsArray){
-        return Object.keys(elementsArray.value).length;
+   return browser.elementIdElements(ID,'<a>').then(function(elementsObject){
+        return Object.keys(elementsObject.value).length;
     });
 };
 
