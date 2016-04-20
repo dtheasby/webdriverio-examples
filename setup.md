@@ -22,7 +22,7 @@ The Webdriver.IO provided test runner, `wdio`, executes all commands synchronous
 
 ![wdioConfig]( {{ site.github.url }}/dtheasby/assets/wdio/wdioConfig.png "Wdio Config Helper")
 
-~~~
+```javascript
 //./wdio.conf.js
 exports.config = {
 
@@ -57,15 +57,14 @@ exports.config = {
         // do something
     }
 };
-~~~
-{: .language-javascript}
+```
 
 We’ve had to point directly to the ‘wdio’ command which resides in the node_modules folder, rather than being able to call `wdio` itself. This is a consequence of installing locally (the `wdio` command hasn’t been added to PATH), but this won’t be a problem once we set up Gulp.
 You can either set up your config file by running the config helper from your newly created test directory, or create your own `wdio.conf.js` in the root of your test directory and copy the above code into it. The main points to take away are that we now have a config file in the root of our test directory, which specifies that we’ll be running our tests on the local machine (using a local selenium server, as opposed to Saucelabs etc.), we’ll be using Mocha as our testing framework, and the location of the test specs relative to the location of the config file. 
 
 Next up, we need a test/spec file for `wdio` to execute, which should be in the directory location referenced in the config file:
 
-~~~
+```javascript
 //”./test/specs/spec.js”
 
 describe("First Spec", function() {
@@ -78,8 +77,7 @@ describe("First Spec", function() {
         });      
     });
 }) ;
-~~~
-{: .language-javascript}
+```
 
 With that set up, we can run `wdio` providing it with the config file:
 
@@ -134,7 +132,7 @@ Another package that will help us is `gulp-webdriver` v1.0.3 (to be compatible w
 
 With gulp, selenium-standalone, and gulp-webdriver installed, we now have all the dependencies required to automate the test workflow. This is what we’re building:
  
-~~~
+```javascript
  //./gulpfile.js
 var path = require('path');
 var gulp = require('gulp');
@@ -161,20 +159,18 @@ gulp.task('runTest', ['selenium'], function() {
       selenium.child.kill();
     });
 });
-~~~
-{: .language-javascript}
+```
  
 Which is the ‘gulpfile.js’, where the gulp processes are defined. This is located next to the wdio config file, in the root of our test directory.
 
 We first load all our gulp dependencies:
 
-~~~
+```javascript
 var path = require('path');
 var gulp = require('gulp');
 var selenium = require('selenium-standalone');
 var webdriver = require('gulp-webdriver');]
-~~~
-{: .language-javascript}
+```
 
 And then declare the first gulp task we’ll need, `selenium`, which follows the structure:
 
@@ -182,7 +178,7 @@ And then declare the first gulp task we’ll need, `selenium`, which follows the
 
 Where we give the task a name, declare the task’s dependencies (our `Selenium` task has no other dependencies), and then a function that performs the task’s main processes. Generally, the options for these main processes are outlined on the plugin’s github/npm page (see [here](https://www.npmjs.com/package/selenium-standalone) for selenium-standalone's options). Our `Selenium` task comprised of two; `selenium.install()` and `selenium.start()`:
 
-~~~
+```javascript
 //.gulpfile.js
 ...
 gulp.task('selenium', function (done) {
@@ -196,8 +192,7 @@ gulp.task('selenium', function (done) {
     });
 });
 ...
-~~~
-{: .language-javascript}
+```
 
 Both commands can take an `options` object before the callback, but we want to run with the default options, so we provide only the callback functions. 
 
@@ -205,7 +200,7 @@ Looking inside the `selenium.start` callback, we set the selenium child process 
 
 Our second Gulp task is going to run the `wdio` command, executing our tests:
 
-~~~
+```javascript
 //./gulpfile.js
 ...
 gulp.task('runTest', ['selenium'], function() {
@@ -215,17 +210,15 @@ gulp.task('runTest', ['selenium'], function() {
     });
 });
 ...
-~~~
-{: .language-javascript}
+```
 
 Following the same setup as before, we’ve named this task ‘runTest’, declared our previous `Selenium` task as a dependency, and then defined the main operations for the task. Simply, `gulp.src` obtains the file located at the provided file location/glob, which can then be piped to the chained process. We’re piping the config file into the gulp-webdriver process, `webdriver()`, which is the equivalent of running `wdio wdio.conf.js` in the command line. It is possible to provide gulp-webdriver with config options at this stage, such as:
 
-~~~
+```javascript
 .pipe(webdriver({ logLevel: 'verbose',
         waitforTimeout: 10000,
         reporter: 'spec' })
-~~~
-{: .language-javascript}
+```
 
  However, it is much more maintainable to contain these in the external config file (futher info on gulp-webdriver and available options can be found here - [Getting-started](http://webdriver.io/guide/testrunner/gettingstarted.html) and [gulp-webdriver](http://webdriver.io/guide/plugins/gulp-webdriver.html)).
 
@@ -233,7 +226,7 @@ The final thing we need to do before running is set up an npm [run](https://docs
 
 Setting up the `npm run` task is super simple, and can be done via the project.json file. `init` should have been kind enough to set up a “Scripts” attribute. In here we can define our gulp task:
 
-~~~
+```javascript
 //./package.json
 …  
 },
@@ -246,8 +239,7 @@ Setting up the `npm run` task is super simple, and can be done via the project.j
   }, 
  "author": "",
 …
-~~~
-{: .language-javascript}
+```
 
 From here, all we need to do is execute `npm run runTasks` to access the assigned gulp workflow. This works because the `npm run` command adds `node_modules/.bin`, our local dependency directory, to the shell’s PATH, allowing us to run Gulp like it’s installed globally!
 
@@ -266,7 +258,7 @@ The test we have at the moment is a fairly straight forward, although with the l
 
 We’ll be going with Expect for the moment. After installing Chai via `npm install chai --save`, and initialising itself and `Expect` in the Before hook located in the wdio config file, we have:
 
-~~~
+```javascript
 // ./wdio.conf.js
 …
     onPrepare: function() {
@@ -280,14 +272,13 @@ We’ll be going with Expect for the moment. After installing Chai via `npm inst
         // do something
     },
 …
-~~~
-{: .language-javascript}
+```
 
 Webdriver.IO sets up the test hooks in it’s config file by default. Each hook is executed at different stages of the test’s flow, with the `before` hook running once per `describe` block, before any `it` blocks are run.
 
 With Chai and Expect declared, we can now add the first assertion to our test:
 
-~~~
+```javascript
 // ./test/specs/spec.js
 describe("First Spec", function() {
     it("should navigate to the webdriverIO homepage", function(){
@@ -299,8 +290,7 @@ describe("First Spec", function() {
         });      
     });
 }) ;
-~~~
-{: .language-javascript}
+```
  
 Running this should present you with a passing test, so let’s take a quick tour of what’s actually going on. 
 
@@ -312,15 +302,14 @@ Furthermore, every Webdriver.IO command is chainable and returns a promise, maki
 
 Looking back at the test case:
 
-~~~
+```javascript
  return browser.url("http://webdriver.io/")
         .click("[href='/guide.html']")
         .getUrl().then(function(url){
             console.log(url) // outputs "http://webdriver.io/guide.html"
             expect(url).to.equal("http://webdriver.io/guide.html");
         });      
-~~~
-{: .language-javascript}
+```
 
 `browser` is an object representation of our selenium browser instance, and is where we direct our actions/commands. The first command chained to it is `url(“http://www.webdriver.io”)`, sending the browser to the given url. The browser object is passed into `url`, and returned with a promise attached to represent this action; only once this promise is resolved will the following chained action, `Click`, execute;
 
@@ -349,7 +338,7 @@ For further understanding of promises, I recommend this blog post [here]( https:
 
 At the moment, we’ve set up our tests to run with each element locator explicitly declared in the test itself. While it does work, as a project expands, readability and maintainability will start to become a big issue. For every change in the DOM, we’ll need to manually change each affected locator in the specs. Using the Page Object model adds a layer of abstraction to the test specs; by grouping together element locators into external modules that represent each page and exposing these to the test spec, we can both increase readability by giving our elements human-friendly names (guideButton, rather than `[href='/guide.html']`), as well as increasing maintainability via encapsulation. 
 
-~~~
+```javascript
 //./test/page-objects/HomePageObject.js
 var HomePage =(function(){
 
@@ -364,10 +353,9 @@ return HomePage;
 })();
 
 module.exports = HomePage;
-~~~
-{: .language-javascript}
+```
 
-~~~
+```javascript
 // ./test/specs/spec.js
 var HomePageObject = require("../page-objects/HomePageObject.js")
 
@@ -388,14 +376,13 @@ describe("First Spec", function() {
         });      
     });
 }) ;
-~~~
-{: .language-javascript}
+```
 
 It doesn’t look like much at the moment, but I’m sure you’ll agree the test spec is definitely more readable. 
 
 In the page-object file (which is created in a new page-object directory), we start by declaring ‘HomePage’ as an Immediately-Invoked Function Expression. Wrapping the constructor function in an IIFE may seem like overkill at the moment, but doing so gives us the potential to add private or static variables and helper functions if they are required in the future. The remainder is fairly self-explanatory:
 
-~~~
+```javascript
 function HomePage() {
         this.url = "http://webdriver.io/";
         this.guideButton = "[href='/guide.html']";
@@ -403,8 +390,7 @@ function HomePage() {
     };
     
     return HomePage;
-~~~
-{: .language-javascript}
+```
 
 We set up a constructor function `HomePage()`, and publicly assign our element-finder strings to it, this is then returned by the IIFE and exposed by `module.exports` so we can access it from our spec files. Using the Constructor pattern means we can instance our page-objects, in case we want to run our specs in parallel at a later date.
 We then use `require` to access the page-object, assigning it to `var HomePage`. We create a new variable in the describe block, `var home`, and then use the `before` hook to create a new instance of the page-object before any of the ‘it’ blocks are executed.
@@ -415,7 +401,7 @@ The current page-object works, but it is fairly straight forward. What if we wan
 
 Navigating to the guide page and clicking on the Test Runner dropdown is a fairly straight forward operation. However, the test will now be interacting with new elements on the Developer Guide page, so let’s create a page-object for to represent this:
 
-~~~
+```javascript
 //./test/page-objects/DevGuidePageObject.js
 var DevGuide = (function() {
     
@@ -439,10 +425,9 @@ return DevGuide;
 })();
 
 module.exports = DevGuide; 
-~~~
-{: .language-javascript}
+```
 
-~~~
+```javascript
 //./test/specs/spec.js
 var HomePageObject = require("../page-objects/HomePageObject.js")
 var DevGuidePageObject = require("../page-objects/DevGuidePageObject.js")
@@ -473,8 +458,7 @@ describe("First Spec", function() {
             });
     });
 });
-~~~
-{: .language-javascript}
+```
 
 The page-object now contains elements for the element and the dropdown we want to test, and our `it` block references them. The next thing we want to do is find a way of determining the number of sub-elements. Webdriver.IO has the command [elementIdElements](http://webdriver.io/api/protocol/elementIdElements.html):
 
@@ -484,15 +468,14 @@ which simply lets you search for elements down the branch of a specified element
 
 The first thing that needs to be done to use `elementIdElements` is create a helper function that returns the WebElement ID of a given element, `getElementID`, so that it can be passed into the command:
 
-~~~
+```javascript
 //./test/page-objects/DevGuidePageObject.js
 …
 DevGuide.prototype.getElementId = function(ele) {
     return ele.value.ELEMENT;   
 }; 
 …
-~~~
-{: .language-javascript}
+```
 
 We’ve added `getElementID` to the prototype so that every instanced page-object gains access to it without it being re-declared each time.
 
@@ -500,7 +483,7 @@ Webdriver.IO is slightly awkward in the way it deals with elements. We’re unab
 
 We can now implement `elementIdElements` in a function that returns the length of the resulting WebElement JSON object:
 
-~~~
+```javascript
 //./test/page-objects/DevGuidePageObject.js
 …
 DevGuide.prototype.numberOfSubElements = function(ID) {
@@ -509,12 +492,11 @@ DevGuide.prototype.numberOfSubElements = function(ID) {
     });
 };
 …
-~~~
-{: .language-javascript}
+```
 
 This takes a given ID, and finds and returns all child elements that match the Link tag. We can then add these into the test spec:
 
-~~~
+```javascript
 //./test/specs/spec.js”
 …
     it("should count the number of testrunner menu subelements", function() {
@@ -530,8 +512,7 @@ This takes a given ID, and finds and returns all child elements that match the L
                 return expect(numberOfElements).to.equal(5);
             });
 });
-~~~
-{: .language-javascript}
+```
 
 After clicking `testRunnerButton`, the element containing our drop down (and the links we're counting) appears. This encompassing element is then passed to a chain of `then` functions, allowing us to;
 
